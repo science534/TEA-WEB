@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ensiklopedia Alam Semesta</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#000814;
+    color:white;
+}
+
+header{
+    text-align:center;
+    padding:40px 20px;
+    background:linear-gradient(to bottom,#001d3d,#000814);
+}
+
+header h1{
+    font-size:30px;
+    color:#00b4ff;
+}
+
+.container{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:20px;
+    padding:20px;
+}
+
+.card{
+    background:#001d3d;
+    border-radius:15px;
+    overflow:hidden;
+    box-shadow:0 0 15px rgba(0,180,255,0.3);
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:scale(1.03);
+}
+
+.card img{
+    width:100%;
+    height:220px;
+    object-fit:cover;
+}
+
+.card-content{
+    padding:15px;
+}
+
+.card-content h2{
+    color:#00b4ff;
+}
+
+.loading{
+    text-align:center;
+    padding:40px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🌌 Ensiklopedia Alam Semesta</h1>
+    <p>Data Langsung dari Wikipedia</p>
+</header>
+
+<div class="container" id="content">
+<div class="loading">Memuat data...</div>
+</div>
+
+<script>
+
+const objects = [
+"Alam semesta",
+"Big Bang",
+"Galaksi Andromeda",
+"Galaksi Bima Sakti",
+"The Great Attractor",
+"Nebula Orion",
+"Lubang hitam",
+"Supernova",
+"Tata Surya",
+"Matahari",
+"Bulan",
+"Planet Mars",
+"Planet Jupiter",
+"Saturnus",
+"Quasar",
+"Pulsar",
+"Bintang neutron",
+"Materi gelap",
+"Energi gelap"
+];
+
+const container = document.getElementById("content");
+container.innerHTML = "";
+
+const fallbackImage = "https://upload.wikimedia.org/wikipedia/commons/9/99/Black_hole_-_Messier_87_crop_max_res.jpg";
+
+objects.forEach(obj => {
+
+fetch(`https://id.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(obj)}`)
+.then(res => {
+    if(!res.ok) throw new Error("Halaman tidak ditemukan");
+    return res.json();
+})
+.then(data => {
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const image = data.thumbnail ? data.thumbnail.source : fallbackImage;
+
+    card.innerHTML = `
+        <img src="${image}" onerror="this.src='${fallbackImage}'">
+        <div class="card-content">
+            <h2>${data.title}</h2>
+            <p>${data.extract}</p>
+        </div>
+    `;
+
+    container.appendChild(card);
+
+})
+.catch(err => {
+    console.log("Error:", obj);
+});
+
+});
+
+</script>
+
+</body>
+</html>
